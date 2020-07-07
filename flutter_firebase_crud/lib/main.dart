@@ -20,7 +20,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
 
-  String studentName, studentRegNum, studentBranch;
+  String studentName, studentRegNo, studentBranch;
   double studentCGPA;
 
   getStudentName(name) {
@@ -28,7 +28,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   getStudentRegNum(regNum) {
-    this.studentRegNum = regNum;
+    this.studentRegNo = regNum;
   }
 
   getStudentBranch(branch) {
@@ -172,6 +172,59 @@ class _MyAppState extends State<MyApp> {
                   ),
                 ],
               ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                textDirection: TextDirection.ltr,
+                children: <Widget>[
+                  Expanded(
+                    child: Text("Name"),
+                  ),
+                  Expanded(
+                    child: Text("Registration Number"),
+                  ),
+                  Expanded(
+                    child: Text("Branch"),
+                  ),
+                  Expanded(
+                    child: Text("CGPA"),
+                  ),
+                ],
+              ),
+            ),
+            StreamBuilder(
+              stream: Firestore.instance.collection("Students").snapshots(),
+              builder: (context, snapshot) {
+                if(snapshot.hasData) {
+                  return ListView.builder(
+                    shrinkWrap: true,
+                      itemCount: snapshot.data.documents.length,
+                      itemBuilder: (context, index) {
+                        DocumentSnapshot documentSnapshot = snapshot.data.documents[index];
+                        return Row(
+                          children: <Widget>[
+                            Expanded(
+                              child: Text(documentSnapshot["studentName"]),
+                            ),
+                            Expanded(
+                              child: Text(documentSnapshot["studentRegNo"]),
+                            ),
+                            Expanded(
+                              child: Text(documentSnapshot["studentBranch"]),
+                            ),
+                            Expanded(
+                              child: Text(documentSnapshot["studentCGPA"].toString()),
+                            ),
+                          ],
+                        );
+                  });
+                }
+                return Align(
+                  alignment: FractionalOffset.bottomCenter,
+                  child: CircularProgressIndicator(),
+                );
+              },
             )
           ],
         ),
@@ -180,20 +233,41 @@ class _MyAppState extends State<MyApp> {
   }
 
   void deleteData() {
-    print('deleted');}
+    DocumentReference documentReference = Firestore.instance.collection("Students").document(studentName);
+    documentReference.delete().whenComplete(() {
+      print("$studentName deleted");
+    });
+  }
 
   void updateData() {
-    print('updated');}
-
-  void readData() {
-    print('read');}
-
-  void createData() {
-    print('created');
     DocumentReference documentReference = Firestore.instance.collection("Students").document(studentName);
     Map<String, dynamic> students = {
       "studentName": studentName,
-      "studentRegNo": studentRegNum,
+      "studentRegNo": studentRegNo,
+      "studentBranch": studentBranch,
+      "studentCGPA": studentCGPA,
+    };
+    documentReference.setData(students).whenComplete(() {
+      print("$studentName updated");
+    });
+  }
+
+  void readData() {
+    DocumentReference documentReference = Firestore.instance.collection("Students").document(studentName);
+
+    documentReference.get().then((datasnapshot) {
+      print(datasnapshot.data["studentName"]);
+      print(datasnapshot.data["studentRegNo"]);
+      print(datasnapshot.data["studentBranch"]);
+      print(datasnapshot.data["studentCGPA"]);
+    });
+  }
+
+  void createData() {
+    DocumentReference documentReference = Firestore.instance.collection("Students").document(studentName);
+    Map<String, dynamic> students = {
+      "studentName": studentName,
+      "studentRegNo": studentRegNo,
       "studentBranch": studentBranch,
       "studentCGPA": studentCGPA,
     };
