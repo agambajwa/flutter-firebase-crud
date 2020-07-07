@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -189,5 +190,15 @@ class _MyAppState extends State<MyApp> {
 
   void createData() {
     print('created');
+    DocumentReference documentReference = Firestore.instance.collection("Students").document(studentName);
+    Map<String, dynamic> students = {
+      "studentName": studentName,
+      "studentRegNo": studentRegNum,
+      "studentBranch": studentBranch,
+      "studentCGPA": studentCGPA,
+    };
+    documentReference.setData(students).whenComplete(() {
+      print("$studentName created");
+    });
   }
 }
