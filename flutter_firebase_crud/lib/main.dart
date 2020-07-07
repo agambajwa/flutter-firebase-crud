@@ -174,21 +174,33 @@ class _MyAppState extends State<MyApp> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: EdgeInsets.all(10.0),
               child: Row(
                 textDirection: TextDirection.ltr,
                 children: <Widget>[
                   Expanded(
-                    child: Text("Name"),
+                    child: Text(
+                        "Name",
+                        style: TextStyle(fontWeight: FontWeight.bold)
+                   ),
                   ),
                   Expanded(
-                    child: Text("Registration Number"),
+                    child: Text(
+                        "Registration No.",
+                        style: TextStyle(fontWeight: FontWeight.bold)
+                    ),
                   ),
                   Expanded(
-                    child: Text("Branch"),
+                    child: Text(
+                        "Branch/Course",
+                        style: TextStyle(fontWeight: FontWeight.bold)
+                    ),
                   ),
                   Expanded(
-                    child: Text("CGPA"),
+                    child: Text(
+                        "CGPA",
+                        style: TextStyle(fontWeight: FontWeight.bold)
+                    ),
                   ),
                 ],
               ),
@@ -197,28 +209,34 @@ class _MyAppState extends State<MyApp> {
               stream: Firestore.instance.collection("Students").snapshots(),
               builder: (context, snapshot) {
                 if(snapshot.hasData) {
-                  return ListView.builder(
-                    shrinkWrap: true,
-                      itemCount: snapshot.data.documents.length,
-                      itemBuilder: (context, index) {
-                        DocumentSnapshot documentSnapshot = snapshot.data.documents[index];
-                        return Row(
-                          children: <Widget>[
-                            Expanded(
-                              child: Text(documentSnapshot["studentName"]),
+                  return Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                        itemCount: snapshot.data.documents.length,
+                        itemBuilder: (context, index) {
+                          DocumentSnapshot documentSnapshot = snapshot.data.documents[index];
+                          return Padding(
+                            padding: const EdgeInsets.all(3.0),
+                            child: Row(
+                              children: <Widget>[
+                                Expanded(
+                                  child: Text(documentSnapshot["studentName"]),
+                                ),
+                                Expanded(
+                                  child: Text(documentSnapshot["studentRegNo"]),
+                                ),
+                                Expanded(
+                                  child: Text(documentSnapshot["studentBranch"]),
+                                ),
+                                Expanded(
+                                  child: Text(documentSnapshot["studentCGPA"].toString()),
+                                ),
+                              ],
                             ),
-                            Expanded(
-                              child: Text(documentSnapshot["studentRegNo"]),
-                            ),
-                            Expanded(
-                              child: Text(documentSnapshot["studentBranch"]),
-                            ),
-                            Expanded(
-                              child: Text(documentSnapshot["studentCGPA"].toString()),
-                            ),
-                          ],
-                        );
-                  });
+                          );
+                    }),
+                  );
                 }
                 return Align(
                   alignment: FractionalOffset.bottomCenter,
